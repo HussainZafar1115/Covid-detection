@@ -9,26 +9,12 @@ import requests
 import tempfile
 import zipfile
 
-def download_and_extract_model(url, save_dir):
-    zip_path = os.path.join(save_dir, 'covid_model.zip')
-    model_path = os.path.join(save_dir, 'covid_model.h5')
-    
-    # Only download and extract if model doesn't exist
+def extract_model(zip_path, extract_dir):
+    """Extract model from zip file if not already extracted"""
+    model_path = os.path.join(extract_dir, 'covid_model.h5')
     if not os.path.exists(model_path):
-        # Download zip file
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
-        with open(zip_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        
-        # Extract zip file
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(save_dir)
-        
-        # Clean up zip file
-        os.remove(zip_path)
-    
+            zip_ref.extractall(extract_dir)
     return model_path
 
 # Create temp directory for model
@@ -37,12 +23,9 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 
 # Load model only once when the module is loaded
 try:
-    MODEL_URL = os.environ.get('MODEL_URL')
-    if MODEL_URL:
-        model_path = download_and_extract_model(MODEL_URL, MODEL_DIR)
-        model = tf.keras.models.load_model(model_path)
-    else:
-        model = tf.keras.models.load_model('covid_model.h5')
+    zip_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'covid_model.zip')
+    model_path = extract_model(zip_path, MODEL_DIR)
+    model = tf.keras.models.load_model(model_path)
     print("Model loaded successfully")
 except Exception as e:
     print(f"Error loading model: {e}")
@@ -57,13 +40,10 @@ def detect(request):
             if model is None:
                 # Try to load model again if it failed initially
                 try:
-                    MODEL_URL = os.environ.get('MODEL_URL')
-                    if MODEL_URL:
-                        model_path = download_and_extract_model(MODEL_URL, MODEL_DIR)
-                        global model
-                        model = tf.keras.models.load_model(model_path)
-                    else:
-                        return JsonResponse({'error': 'MODEL_URL not configured'}, status=500)
+                    zip_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'covid_model.zip')
+                    model_path = extract_model(zip_path, MODEL_DIR)
+                    global model
+                    model = tf.keras.models.load_model(model_path)
                 except Exception as e:
                     return JsonResponse({'error': f'Could not load model: {str(e)}'}, status=500)
 

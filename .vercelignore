@@ -1,4 +1,4 @@
-*.h5
+covid_model.h5
 __pycache__/
 *.pyc
 db.sqlite3 
