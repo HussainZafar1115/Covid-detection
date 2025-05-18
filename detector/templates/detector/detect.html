@@ -1,0 +1,98 @@
+{% extends 'detector/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center mb-0">COVID-19 Detection</h2>
+            </div>
+            <div class="card-body">
+                <form id="detection-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Upload Chest X-ray Image</label>
+                        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                        <small class="form-text text-muted">Supported formats: PNG, JPG, JPEG</small>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Detect COVID-19</button>
+                    </div>
+                </form>
+
+                <div id="result" class="mt-4" style="display: none;">
+                    <div class="alert" role="alert">
+                        <h4 class="alert-heading">Detection Result</h4>
+                        <p id="result-text"></p>
+                        <p id="confidence-text" class="mb-0"></p>
+                        <hr>
+                        <div id="positive-guidance" style="display: none;">
+                            <p class="mb-2">Don't worry, we're here to help. Stay calm and follow the recommended guidelines.</p>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'symptoms' %}" class="btn btn-info">View Symptoms & Care Guidelines</a>
+                                <a href="tel:1166" class="btn btn-success">Call COVID-19 Helpline (1166)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('detection-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const resultDiv = document.getElementById('result');
+    const resultText = document.getElementById('result-text');
+    const confidenceText = document.getElementById('confidence-text');
+    const positiveGuidance = document.getElementById('positive-guidance');
+
+    submitButton.disabled = true;
+    submitButton.innerHTML = 'Processing...';
+    resultDiv.style.display = 'none';
+
+    try {
+        const response = await fetch('/detect/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        });
+
+        const data = await response.json();
+        
+        resultDiv.style.display = 'block';
+        
+        if (data.error) {
+            resultDiv.querySelector('.alert').className = 'alert alert-danger';
+            resultText.textContent = 'Error: ' + data.error;
+            confidenceText.textContent = 'Please try again with a different image';
+            positiveGuidance.style.display = 'none';
+        } else {
+            const isPositive = data.result.includes('Positive');
+            resultDiv.querySelector('.alert').className = 'alert ' + 
+                (isPositive ? 'alert-danger' : 'alert-success');
+            resultText.textContent = data.result;
+            confidenceText.textContent = `Confidence: ${data.confidence}`;
+            positiveGuidance.style.display = isPositive ? 'block' : 'none';
+        }
+    } catch (error) {
+        resultDiv.style.display = 'block';
+        resultDiv.querySelector('.alert').className = 'alert alert-danger';
+        resultText.textContent = 'Error processing image';
+        confidenceText.textContent = 'Please try again with a different image';
+        positiveGuidance.style.display = 'none';
+        console.error('Error:', error);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Detect COVID-19';
+    }
+});
+</script>
+{% endblock %} 

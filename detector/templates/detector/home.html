@@ -1,0 +1,29 @@
+{% extends 'detector/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">COVID-19 Detection System</h1>
+        <p class="lead mb-4">Upload chest X-ray images to detect COVID-19 with 84% accuracy using our advanced AI model.</p>
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="{% url 'detect' %}" class="btn btn-primary btn-lg px-4 gap-3">Start Detection</a>
+            <a href="{% url 'prevention' %}" class="btn btn-outline-secondary btn-lg px-4">Learn Prevention</a>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <h3>Quick Detection</h3>
+        <p>Upload chest X-ray images and get instant results with our AI-powered detection system.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>High Accuracy</h3>
+        <p>Our model achieves 84% accuracy in detecting COVID-19 from chest X-ray images.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>Expert Resources</h3>
+        <p>Access prevention tips and valuable resources about COVID-19.</p>
+    </div>
+</div>
+{% endblock %} 

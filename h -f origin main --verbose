@@ -1,0 +1,6 @@
+[33m86b9c06[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Adding all project files including Django app, model, and templates
+[33m495a895[m Add all project files including model and training scripts
+[33mc0f3b4a[m Update gitignore to only exclude archive.zip and standard files
+[33m907e377[m Update gitignore to exclude training files and datasets
+[33m41b8b8e[m Add model files and update settings
+[33md7f660e[m[33m ([m[1;31morigin/main[m[33m)[m Initial commit: COVID-19 Detection System

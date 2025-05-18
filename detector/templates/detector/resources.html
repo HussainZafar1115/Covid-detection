@@ -1,0 +1,104 @@
+{% extends 'detector/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">COVID-19 Resources in Pakistan</h1>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Emergency Contacts</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>National Emergency Helpline:</strong><br>
+                            <a href="tel:1166" class="btn btn-outline-primary mt-2">1166</a>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Provincial Helplines:</strong><br>
+                            Punjab: <a href="tel:0800-99000">0800-99000</a><br>
+                            Sindh: <a href="tel:021-99204452">021-99204452</a><br>
+                            KPK: <a href="tel:1700">1700</a><br>
+                            Balochistan: <a href="tel:1166">1166</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Official Resources</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="https://covid.gov.pk" target="_blank" class="text-decoration-none">
+                                Pakistan COVID-19 Portal
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="https://nhsrc.gov.pk" target="_blank" class="text-decoration-none">
+                                National Health Services
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="https://www.nih.org.pk" target="_blank" class="text-decoration-none">
+                                National Institute of Health
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">Vaccination Centers</h3>
+                </div>
+                <div class="card-body">
+                    <p>Find your nearest vaccination center:</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="https://nims.nadra.gov.pk/nims/" target="_blank" class="btn btn-primary">
+                                NADRA Vaccination Registration
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            Send your CNIC number to <strong>1166</strong> via SMS to get registered
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">Testing Facilities</h3>
+                </div>
+                <div class="card-body">
+                    <p>Major COVID-19 Testing Facilities:</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Aga Khan University Hospital, Karachi</li>
+                        <li class="list-group-item">Shaukat Khanum Memorial Hospital, Lahore</li>
+                        <li class="list-group-item">Pakistan Institute of Medical Sciences (PIMS), Islamabad</li>
+                        <li class="list-group-item">Hayatabad Medical Complex, Peshawar</li>
+                        <li class="list-group-item">
+                            <a href="https://covid.gov.pk/facilities/Testing_Facilities.pdf" target="_blank" class="btn btn-outline-primary mt-2">
+                                View Complete List
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
