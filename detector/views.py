@@ -35,6 +35,7 @@ def home(request):
     return render(request, 'detector/home.html')
 
 def detect(request):
+    global model  # Move global declaration to start of function
     if request.method == 'POST' and request.FILES.get('image'):
         try:
             if model is None:
@@ -42,7 +43,6 @@ def detect(request):
                 try:
                     zip_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'covid_model.zip')
                     model_path = extract_model(zip_path, MODEL_DIR)
-                    global model
                     model = tf.keras.models.load_model(model_path)
                 except Exception as e:
                     return JsonResponse({'error': f'Could not load model: {str(e)}'}, status=500)
