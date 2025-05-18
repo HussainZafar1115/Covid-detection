@@ -5,10 +5,44 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 import os
+import requests
+import tempfile
+import zipfile
+
+def download_and_extract_model(url, save_dir):
+    zip_path = os.path.join(save_dir, 'covid_model.zip')
+    model_path = os.path.join(save_dir, 'covid_model.h5')
+    
+    # Only download and extract if model doesn't exist
+    if not os.path.exists(model_path):
+        # Download zip file
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+        with open(zip_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        
+        # Extract zip file
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(save_dir)
+        
+        # Clean up zip file
+        os.remove(zip_path)
+    
+    return model_path
+
+# Create temp directory for model
+MODEL_DIR = os.path.join(tempfile.gettempdir(), 'covid_model')
+os.makedirs(MODEL_DIR, exist_ok=True)
 
 # Load model only once when the module is loaded
 try:
-    model = tf.keras.models.load_model('covid_model.h5')
+    MODEL_URL = os.environ.get('MODEL_URL')
+    if MODEL_URL:
+        model_path = download_and_extract_model(MODEL_URL, MODEL_DIR)
+        model = tf.keras.models.load_model(model_path)
+    else:
+        model = tf.keras.models.load_model('covid_model.h5')
     print("Model loaded successfully")
 except Exception as e:
     print(f"Error loading model: {e}")
@@ -21,7 +55,17 @@ def detect(request):
     if request.method == 'POST' and request.FILES.get('image'):
         try:
             if model is None:
-                return JsonResponse({'error': 'Model not loaded'}, status=500)
+                # Try to load model again if it failed initially
+                try:
+                    MODEL_URL = os.environ.get('MODEL_URL')
+                    if MODEL_URL:
+                        model_path = download_and_extract_model(MODEL_URL, MODEL_DIR)
+                        global model
+                        model = tf.keras.models.load_model(model_path)
+                    else:
+                        return JsonResponse({'error': 'MODEL_URL not configured'}, status=500)
+                except Exception as e:
+                    return JsonResponse({'error': f'Could not load model: {str(e)}'}, status=500)
 
             # Read and preprocess image
             image_file = request.FILES['image']
@@ -63,3 +107,11 @@ def resources(request):
 
 def symptoms(request):
     return render(request, 'detector/symptoms.html')
+
+def predict_image(request):
+    if request.method == 'POST':
+        MODEL_URL = os.environ.get('MODEL_URL', 'YOUR_GITHUB_RELEASE_URL_HERE')
+        model_path = os.path.join(tempfile.gettempdir(), 'covid_model.h5')
+        download_model(MODEL_URL, model_path)
+        model = tf.keras.models.load_model(model_path)
+        # ... rest of your code ...
