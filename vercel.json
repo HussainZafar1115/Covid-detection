@@ -1,7 +1,7 @@
 {
     "version": 2,
     "builds": [{
-        "src": "covid_detector/wsgi.py",
+        "src": "wsgi.py",
         "use": "@vercel/python"
     }],
     "routes": [
@@ -11,7 +11,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "covid_detector/wsgi.py"
+            "dest": "wsgi.py"
         }
     ]
 } 
