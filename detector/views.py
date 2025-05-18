@@ -9,13 +9,18 @@ import requests
 import tempfile
 import zipfile
 
-def extract_model(zip_path, extract_dir):
-    """Extract model from zip file if not already extracted"""
-    model_path = os.path.join(extract_dir, 'covid_model.h5')
-    if not os.path.exists(model_path):
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extractall(extract_dir)
-    return model_path
+def combine_model_parts(parts_dir, output_path):
+    """Combine split model parts into a single file"""
+    if not os.path.exists(output_path):
+        # Get all parts sorted by number
+        parts = sorted([f for f in os.listdir(parts_dir) if f.startswith('covid_model.part')])
+        
+        # Combine parts
+        with open(output_path, 'wb') as outfile:
+            for part in parts:
+                part_path = os.path.join(parts_dir, part)
+                with open(part_path, 'rb') as infile:
+                    outfile.write(infile.read())
 
 # Create temp directory for model
 MODEL_DIR = os.path.join(tempfile.gettempdir(), 'covid_model')
@@ -23,8 +28,9 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 
 # Load model only once when the module is loaded
 try:
-    zip_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'covid_model.zip')
-    model_path = extract_model(zip_path, MODEL_DIR)
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    model_path = os.path.join(MODEL_DIR, 'covid_model.h5')
+    combine_model_parts(base_dir, model_path)
     model = tf.keras.models.load_model(model_path)
     print("Model loaded successfully")
 except Exception as e:
@@ -35,14 +41,15 @@ def home(request):
     return render(request, 'detector/home.html')
 
 def detect(request):
-    global model  # Move global declaration to start of function
+    global model
     if request.method == 'POST' and request.FILES.get('image'):
         try:
             if model is None:
                 # Try to load model again if it failed initially
                 try:
-                    zip_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'covid_model.zip')
-                    model_path = extract_model(zip_path, MODEL_DIR)
+                    base_dir = os.path.dirname(os.path.dirname(__file__))
+                    model_path = os.path.join(MODEL_DIR, 'covid_model.h5')
+                    combine_model_parts(base_dir, model_path)
                     model = tf.keras.models.load_model(model_path)
                 except Exception as e:
                     return JsonResponse({'error': f'Could not load model: {str(e)}'}, status=500)
