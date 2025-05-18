@@ -2,9 +2,9 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "gunicorn covidhelp.wsgi:application --bind 0.0.0.0:$PORT"
+startCommand = "gunicorn wsgi:application --bind 0.0.0.0:$PORT --log-level debug"
 healthcheckPath = "/health/"
-healthcheckTimeout = 180
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
 
 [envs]
