@@ -1,0 +1,13 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "gunicorn covidhelp.wsgi:application"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
+
+[envs]
+PYTHON_VERSION = "3.12"
+DJANGO_SETTINGS_MODULE = "covidhelp.settings"
+ALLOWED_HOSTS = "*" 
