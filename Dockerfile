@@ -10,4 +10,8 @@ COPY . .
 ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
-CMD ["gunicorn", "wsgi:application", "--bind", "0.0.0.0:8000", "--log-level", "debug"] 
+# Create a startup script that uses the PORT env var
+RUN echo '#!/bin/bash\nport="${PORT:-8000}"\ngunicorn wsgi:application --bind "0.0.0.0:$port" --log-level debug' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+CMD ["/app/start.sh"] 
