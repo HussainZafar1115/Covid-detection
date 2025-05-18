@@ -102,3 +102,6 @@ def predict_image(request):
         download_model(MODEL_URL, model_path)
         model = tf.keras.models.load_model(model_path)
         # ... rest of your code ...
+
+def health_check(request):
+    return JsonResponse({"status": "healthy"})

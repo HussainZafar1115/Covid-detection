@@ -19,9 +19,17 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=covidhelp.settings
 ENV ALLOWED_HOSTS=*
+ENV PORT=8000
+
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+python manage.py migrate --noinput\n\
+python manage.py collectstatic --noinput\n\
+gunicorn covidhelp.wsgi:application --bind 0.0.0.0:$PORT\n'\
+> /app/start.sh && chmod +x /app/start.sh
 
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["gunicorn", "covidhelp.wsgi:application", "--bind", "0.0.0.0:8000"] 
+# Run the startup script
+CMD ["/app/start.sh"] 
