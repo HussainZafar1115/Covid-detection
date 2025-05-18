@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import tensorflow as tf
 import numpy as np
@@ -104,4 +104,4 @@ def predict_image(request):
         # ... rest of your code ...
 
 def health_check(request):
-    return JsonResponse({"status": "healthy"})
+    return HttpResponse("OK", content_type="text/plain")

@@ -2,15 +2,14 @@
 builder = "NIXPACKS"
 
 [deploy]
-startCommand = "gunicorn covidhelp.wsgi:application --timeout 120"
+startCommand = "gunicorn covidhelp.wsgi:application --bind 0.0.0.0:$PORT"
 healthcheckPath = "/health/"
-healthcheckTimeout = 300
+healthcheckTimeout = 180
 restartPolicyType = "ON_FAILURE"
-healthcheckInterval = "30s"
 
 [envs]
 PYTHON_VERSION = "3.12"
 DJANGO_SETTINGS_MODULE = "covidhelp.settings"
 ALLOWED_HOSTS = "*"
 PORT = "8000"
-PYTHONUNBUFFERED = "1" 
+DEBUG = "True" 
